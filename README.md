@@ -18,7 +18,7 @@ If **bit 15 = 0**, stores number of ticks per quarter note (PPQN). <br> - If **b
 
 | Field        | Size      | Description            |
 |--------------|-----------|-------------           |
-| `chunk type` | 32-bit    | Always ASCII `'MThd'`  |
+| `chunk type` | 32-bit    | ASCII                  |
 | `length`     | 32-bit    | The lenght of track    |
 | `MTrk event` | VLQ       | One or more            |
 

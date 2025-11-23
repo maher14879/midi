@@ -2,16 +2,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h> 
+#include "midi_types.h"
 
-read_header(const unsigned char *buffer) {
-
-}
-
-read_track(const unsigned char *buffer) {
-
-}
-
-void read_midi(const unsigned char *buffer) {
+Header read_header(const unsigned char *buffer) {
     unsigned char chunk_type[4];
     chunk_type[0] = buffer[0];
     chunk_type[1] = buffer[1];
@@ -39,15 +32,34 @@ void read_midi(const unsigned char *buffer) {
         exit(1);
     }
 
+    Header header = {chunk_type, length, format, ntrks, division};
+    return header;
+}
+
+Track read_track(const unsigned char *buffer) {
+    unsigned char chunk_type[4];
+    chunk_type[0] = buffer[0];
+    chunk_type[1] = buffer[1];
+    chunk_type[2] = buffer[2];
+    chunk_type[3] = buffer[3];
+    Track track = {};
+    return track;
+}
+
+void read_midi(const unsigned char *buffer) {
+    Header header = read_header(buffer);
+    Track track = read_track(buffer);
+
+    uint32_t beats_per_minute = 1; //replace
     uint32_t ticks_per_second;
-    if (division & 0x8000) {
-        int8_t frames_per_second = (int8_t)((division >> 8) & 0x7F);
+    if (header.division & 0x8000) {
+        int8_t frames_per_second = (int8_t)((header.division >> 8) & 0x7F);
         if (frames_per_second & 0x40) frames_per_second |= 0x80;
         frames_per_second = -frames_per_second;
-        uint8_t ticks_per_frame = division & 0xFF;
+        uint8_t ticks_per_frame = header.division & 0xFF;
         ticks_per_second = frames_per_second * ticks_per_frame;
     } else {
-        ticks_per_second = division * beats_per_minute / 60;
+        ticks_per_second = header.division * beats_per_minute / 60;
     }
 }
 
